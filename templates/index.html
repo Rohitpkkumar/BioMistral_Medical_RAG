@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BioMistral Medical RAG</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+
+    <style>
+      :root {
+        --primary-color: #00d2ff;
+        --secondary-color: #3a7bd5;
+        --bg-dark: #0f172a;
+        --glass-bg: rgba(30, 41, 59, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-light: #e2e8f0;
+      }
+
+      /* 1. Animated Gradient Background */
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      body {
+        /* Light Medical Gradient: White to Soft Blue */
+        background: linear-gradient(-45deg, #eef2f3, #e0eafc, #cfdef3, #eef2f3);
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite; /* Slow moving colors */
+
+        font-family: "Inter", sans-serif;
+        color: #334155; /* Darker text for readability on light bg */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      /* 2. Floating DNA Particles (Optional but cool) */
+      body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image:
+          radial-gradient(#3a7bd5 1px, transparent 1px),
+          radial-gradient(#3a7bd5 1px, transparent 1px);
+        background-size: 40px 40px;
+        background-position:
+          0 0,
+          20px 20px;
+        opacity: 0.1; /* Very subtle grid dots */
+        z-index: -1;
+        animation: moveGrid 60s linear infinite;
+      }
+
+      @keyframes moveGrid {
+        0% {
+          transform: translateY(0);
+        }
+        100% {
+          transform: translateY(-40px);
+        }
+      }
+
+      .main-container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+
+      /* Header Styles */
+      .app-header {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+
+      .chat-heading {
+        font-family: "Orbitron", sans-serif;
+        font-size: 3rem;
+        background: linear-gradient(to right, #00d2ff, #3a7bd5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        margin-bottom: 10px;
+      }
+
+      .sub-heading {
+        color: #94a3b8;
+        font-weight: 300;
+      }
+
+      /* Glassmorphism Card */
+      .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+      }
+
+      /* Input Area */
+      /* Find this class in your <style> tag and replace it */
+      .input-group-custom {
+        position: relative;
+        /* CHANGED: From dark blue to transparent white (0.1 opacity) */
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        border: 1px solid var(--glass-border);
+        padding: 5px;
+        transition: border-color 0.3s ease;
+      }
+
+      .input-group-custom:focus-within {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+      }
+
+      .chat-input {
+        background: transparent;
+        border: none;
+        color: white;
+        resize: none;
+        padding: 15px;
+        font-size: 1rem;
+        height: 80px;
+      }
+
+      .chat-input:focus {
+        background: transparent;
+        color: white;
+        box-shadow: none;
+      }
+
+      .send-btn {
+        /* 1. Cool Gradient Background */
+        background: linear-gradient(45deg, #00d2ff, #3a7bd5, #00d2ff);
+        background-size: 200% auto; /* Allows the gradient to move */
+
+        /* 2. Shape and Text */
+        border: none;
+        border-radius: 50px; /* Pill shape looks more modern than squares */
+        color: white;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.9rem;
+
+        /* 3. Positioning (Keeps it in the corner of the input box) */
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+
+        /* 4. The "Neon" Glow Effect */
+        box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
+
+        /* 5. Smooth Transitions */
+        transition: all 0.4s ease;
+        cursor: pointer;
+        z-index: 10;
+      }
+
+      /* Hover State - Making it pop */
+      .send-btn:hover {
+        background-position: right center; /* Moves the gradient */
+        box-shadow: 0 0 25px rgba(0, 210, 255, 0.7); /* Stronger Glow */
+        transform: translateY(-2px) scale(1.05); /* Lifts up slightly */
+      }
+
+      /* Icon Animation - Making the plane fly */
+      .send-btn i {
+        transition: transform 0.3s ease;
+      }
+
+      .send-btn:hover i {
+        transform: translateX(4px) translateY(-2px); /* Moves icon up and right */
+      }
+
+      /* Active State - Click effect */
+      .send-btn:active {
+        transform: scale(0.95);
+        box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+      }
+
+      /* Response Area */
+      .response-container {
+        display: none; /* Hidden by default */
+      }
+
+      .answer-box {
+        border-left: 4px solid var(--primary-color);
+        background: rgba(255, 255, 255, 0.03);
+        padding: 20px;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 20px;
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+
+      /* Source/Context Accordion Styling */
+      .accordion-item {
+        background-color: transparent;
+        border: 1px solid var(--glass-border);
+      }
+
+      .accordion-button {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-light);
+        box-shadow: none !important;
+      }
+
+      .accordion-button:not(.collapsed) {
+        background-color: rgba(0, 210, 255, 0.1);
+        color: var(--primary-color);
+      }
+
+      .accordion-body pre {
+        background-color: #000;
+        padding: 15px;
+        border-radius: 6px;
+        color: #0f0; /* Matrix green for code/raw text */
+        font-size: 0.85rem;
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #333;
+      }
+
+      /* Loader Animation */
+      .loader-container {
+        display: none;
+        text-align: center;
+        padding: 40px;
+      }
+
+      .pulse-ring {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        box-shadow: 0 0 0 var(--primary-color);
+        animation: pulse-blue 2s infinite;
+      }
+
+      @keyframes pulse-blue {
+        0% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7);
+        }
+        70% {
+          transform: scale(1);
+          box-shadow: 0 0 0 15px rgba(0, 210, 255, 0);
+        }
+        100% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(0, 210, 255, 0);
+        }
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-color);
+      }
+
+      /* Footer */
+      .footer {
+        margin-top: auto;
+        text-align: center;
+        padding: 20px;
+        font-size: 0.8rem;
+        color: #64748b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container main-container">
+      <header class="app-header animate__animated animate__fadeInDown">
+        <h1 class="chat-heading">
+          <i class="fa-solid fa-dna"></i> BioMistral RAG
+        </h1>
+        <p class="sub-heading">
+          Advanced Biomedical Question Answering System powered by BioMistral 7B
+          & PubMedBert
+        </p>
+      </header>
+
+      <div
+        class="glass-card animate__animated animate__fadeIn animate__delay-1s"
+      >
+        <div class="accordion" id="appDescriptionAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="descriptionHeading">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseDescription"
+              >
+                <i class="fa-solid fa-circle-info me-2"></i> System Architecture
+                & Capabilities
+              </button>
+            </h2>
+            <div
+              id="collapseDescription"
+              class="accordion-collapse collapse"
+              data-bs-parent="#appDescriptionAccordion"
+            >
+              <div class="accordion-body">
+                <p class="mb-1 text-white">
+                  This application utilizes a local RAG pipeline optimized for
+                  medical queries:
+                </p>
+                <ul class="small text-white">
+                  <li><strong>LLM:</strong> BioMistral 7B (Quantized)</li>
+                  <li><strong>Embeddings:</strong> PubMedBert</li>
+                  <li><strong>Vector Store:</strong> Qdrant (Self-hosted)</li>
+                  <li><strong>Orchestration:</strong> LangChain & Llama.cpp</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="glass-card animate__animated animate__fadeInUp animate__delay-1s"
+      >
+        <div class="input-group-custom">
+          <textarea
+            id="userInput"
+            class="form-control chat-input"
+            placeholder="Ask a medical question (e.g., 'What are the clinical manifestations of Diabetes?')..."
+          ></textarea>
+          <button id="submitBtn" class="btn send-btn">
+            <i class="fa-solid fa-paper-plane"></i> Search
+          </button>
+        </div>
+      </div>
+
+      <div id="loader" class="loader-container">
+        <div class="pulse-ring"></div>
+        <p class="mt-3 text-info">Consulting Medical Knowledge Base...</p>
+      </div>
+
+      <div
+        id="responseContainer"
+        class="glass-card response-container animate__animated animate__fadeIn"
+      >
+        <h4 class="mb-3 text-info">
+          <i class="fa-solid fa-robot me-2"></i> AI Diagnosis/Response
+        </h4>
+
+        <div id="answerText" class="answer-box"></div>
+
+        <div class="accordion mt-4" id="sourceAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="sourceHeading">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseSource"
+              >
+                <i class="fa-solid fa-database me-2"></i> Retrieved Context &
+                Sources
+              </button>
+            </h2>
+            <div
+              id="collapseSource"
+              class="accordion-collapse collapse"
+              data-bs-parent="#sourceAccordion"
+            >
+              <div class="accordion-body">
+                <h6 class="text-white-50">Combined Context:</h6>
+                <pre id="contextData"></pre>
+                <hr class="border-secondary" />
+                <h6 class="text-white-50">Raw Source Document:</h6>
+                <pre id="sourceData"></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      BioMistral Medical RAG Project | Powered by Open Source AI
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Typewriter Effect Function
+      function typeWriter(text, elementId, speed = 10) {
+        let i = 0;
+        document.getElementById(elementId).innerHTML = "";
+        function type() {
+          if (i < text.length) {
+            document.getElementById(elementId).innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+          }
+        }
+        type();
+      }
+
+      document
+        .getElementById("submitBtn")
+        .addEventListener("click", async function () {
+          var userInput = document.getElementById("userInput").value;
+          if (!userInput.trim()) return;
+
+          // UI State: Loading
+          document.getElementById("responseContainer").style.display = "none";
+          document.getElementById("loader").style.display = "block";
+          this.disabled = true;
+          this.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+          const formData = new FormData();
+          formData.append("query", userInput);
+
+          try {
+            const response = await fetch("/get_response", {
+              method: "POST",
+              body: formData,
+            });
+
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+
+            const data = await response.json();
+
+            // UI State: Success
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("responseContainer").style.display =
+              "block";
+
+            // Populate Data
+            // Use typewriter for the main answer
+            typeWriter(data.answer, "answerText", 15);
+
+            // Fill Context (No typewriter needed for raw data)
+            document.getElementById("contextData").innerText =
+              data.source_document;
+            document.getElementById("sourceData").innerText = data.doc;
+
+            // Reset Button
+            document.getElementById("submitBtn").disabled = false;
+            document.getElementById("submitBtn").innerHTML =
+              '<i class="fa-solid fa-paper-plane"></i> Analyze';
+          } catch (error) {
+            console.error("Error:", error);
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("responseContainer").style.display =
+              "block";
+            document.getElementById("answerText").innerHTML =
+              '<span class="text-danger">Error processing your request. Please check the backend connection.</span>';
+
+            document.getElementById("submitBtn").disabled = false;
+            document.getElementById("submitBtn").innerHTML =
+              '<i class="fa-solid fa-paper-plane"></i> Analyze';
+          }
+        });
+    </script>
+  </body>
+</html>
