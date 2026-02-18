@@ -37,7 +37,7 @@ Before running this project, ensure you have:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/Rohitpkkumar/Medical-RAG-BioMistral.git
+git clone https://github.com/Rohitpkkumar/BioMistral_Medical_RAG
 cd Medical-RAG-BioMistral
 ```
 ### 2. Create a Virtual Environment
@@ -112,4 +112,5 @@ http://localhost:5000
 <img width="1680" height="961" alt="Screenshot 2026-02-18 at 4 57 11 PM" src="https://github.com/user-attachments/assets/ae19bb93-f20e-41f2-b75d-de244edf4a66" />
 <img width="1680" height="961" alt="Screenshot 2026-02-18 at 5 06 22 PM" src="https://github.com/user-attachments/assets/6955844f-d3ad-4e9e-b953-9d7ecd97e04d" />
 <img width="1680" height="961" alt="Screenshot 2026-02-18 at 5 06 00 PM" src="https://github.com/user-attachments/assets/dea0c2f6-3482-4699-9ab7-8dbad782e226" />
+
 
